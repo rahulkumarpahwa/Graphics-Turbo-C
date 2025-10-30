@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Turbo-C Graphics</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+        .content-section {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+            scroll-margin-top: 100px;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            background-color: rgb(146 64 14) !important;
+            color: white !important;
+        }
+        .toggle-content {
+            display: none;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            max-height: 0;
+        }
+        .toggle-content.show {
+            display: block;
+            max-height: 1000px;
+        }
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        .rotated {
+            transform: rotate(90deg);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #hanoiCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 140px; /* default, can be overridden by inline style */
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-stone-800">
+    
+    <!-- Chosen Palette: Warm Amber & Stone -->
+    <!-- Application Structure Plan: The application transforms the provided syllabus/topic list into a task-oriented, thematic SPA. Instead of a linear list, the structure uses a main navigation bar to group topics into three logical themes: "Fundamentals" (the tools), "Core Concepts" (the techniques), and "Applications" (the results). This grouping is chosen for usability, allowing a user to explore based on their level of understanding. Each section uses interactive toggleable cards to present detailed information, preventing cognitive overload. The "Applications" section includes a live canvas-based animation of "Towers of Hanoi" to make the abstract "Animated Algorithms" topic tangible and engaging. This structure facilitates non-linear exploration and active learning. -->
+    <!-- Visualization & Content Choices: Report Info: "Animated algorithms for Sorting, Towers of Hanoi" -> Goal: Demonstrate the "Concept of Animation" in a practical, engaging way. -> Viz/Presentation Method: A dynamic HTML Canvas animation rendered with vanilla JavaScript. -> Interaction: A user clicks an "Animate" button to start the visualization. The algorithm's steps are displayed as text while the animation runs. -> Justification: This is far more effective than static text for explaining an "animated algorithm." It provides a "wow" factor and makes the concept concrete. -> Library/Method: Vanilla JS Canvas API. | Report Info: Topic lists (Primitives, Plotting, etc.) -> Goal: Organize and present hierarchical text information. -> Viz/Presentation Method: Interactive "accordion" style toggles made with HTML/Tailwind/JS. -> Interaction: User clicks a header to expand/collapse the content. -> Justification: This fits the "easily consumable" goal by hiding complexity until requested. | -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <main class="container mx-auto p-4 md:p-8 max-w-6xl min-h-screen">
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-amber-800 mb-2">Interactive Guide to Turbo-C Graphics</h1>
+            <p class="text-lg md:text-xl text-stone-600">An exploration of the concepts from the classic <code class="bg-stone-200 px-2 py-1 rounded">graphics.h</code> library</p>
+        </header>
+
+        <nav class="sticky top-0 z-50 bg-amber-50 py-4 -mx-4 px-4 md:-mx-8 md:px-8 mb-8 md:mb-12">
+            <div class="flex flex-wrap justify-center gap-2">
+                <a href="#home" class="nav-btn active text-white bg-amber-700 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="home">Home</a>
+                <a href="#fundamentals" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="fundamentals">1. Fundamentals</a>
+                <a href="#concepts" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="concepts">2. Core Concepts</a>
+                <a href="#applications" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="applications">3. Applications</a>
+            </div>
+        </nav>
+
+        <div id="content-container">
+            
+            <section id="home" class="content-section active">
+                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">Welcome to the Guide</h2>
+                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                    This application translates the core topics of the Turbo-C graphics language into an interactive, explorable format. Instead of a static list, this guide groups concepts into functional themes: the basic building blocks, the core techniques, and practical applications. Use the navigation above to move between sections and click on any topic to reveal more details.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">What Was Turbo-C Graphics?</h3>
+                        <p class="text-stone-600">
+                            The Turbo-C <code class="bg-stone-200 px-1 py-0.5 rounded">graphics.h</code> library was a popular and simple way for students and hobbyists in the late 1980s and 90s to learn computer graphics. It provided a set of functions to draw pixels, lines, circles, and rectangles, and to handle colors and basic animations, all within the MS-DOS environment.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Why Explore This Now?</h3>
+                        <p class="text-stone-600">
+                            While technologically obsolete, the *concepts* remain fundamental. Understanding how to build images from primitives, manage a display, and create animation from scratch provides a strong foundation for understanding modern graphics APIs, game engines, and data visualization libraries (like the one used to build this page!).
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fundamentals" class="content-section">
+                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">1. Fundamentals: The Building Blocks</h2>
+                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                    This section covers the absolute basics. "Primitives" are the foundational elements like variables and operators that define *what* you can draw, while "Plotting & Transformations" cover the actions of *how* you draw and manipulate those shapes on the screen. Click each topic to learn more.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 md:col-span-2">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Turbo-C Graphics Language — Detailed Topics</h3>
+                        <div class="space-y-4 text-stone-600">
+                            <div>
+                                <h4 class="font-semibold text-amber-800">Primitives (Constants, Actions, Operators, Variables)</h4>
+                                <p class="mt-2">Primitives are the smallest building blocks: constants (predefined colors and styles), actions (system calls), the C operators used to compute positions, and the variables that hold state. Examples:
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">RED, BLUE</code> — color constants.
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">closegraph()</code> — actions to start/stop the driver.
+                                    <br>• Operators like <code class="bg-stone-200 px-1 py-0.5 rounded">+</code> and <code class="bg-stone-200 px-1 py-0.5 rounded">*</code> are used to compute coordinates (e.g., centerX = x + width/2).
+                                    <br>• Variables store coordinates, sizes, colors, and animation state (for example <code class="bg-stone-200 px-1 py-0.5 rounded">int x, y, radius, color;</code>).</p>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-amber-800">Plotting & Geometric Transformations</h4>
+                                <p class="mt-2">Plotting functions draw primitives on the screen. Typical functions include:
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">putpixel(x, y, color)</code>
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">line(x1, y1, x2, y2)</code>
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">rectangle(x1, y1, x2, y2)</code>
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">circle(x, y, r)</code>
+                                    <br>Transformations are implemented by changing coordinates before drawing:</p>
+                                <div class="mt-3 space-y-2 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                    <div class="flex items-start">
+                                        <span class="mr-2">•</span>
+                                        <p><strong class="text-amber-800">Translation:</strong> <code class="bg-white px-2 py-1 rounded border border-amber-200">(x', y') = (x + tx, y + ty)</code></p>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="mr-2">•</span>
+                                        <p><strong class="text-amber-800">Scaling:</strong> <code class="bg-white px-2 py-1 rounded border border-amber-200">(x', y') = (cx + sx*(x-cx), cy + sy*(y-cy))</code></p>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="mr-2">•</span>
+                                        <p><strong class="text-amber-800">Rotation:</strong> <code class="bg-white px-2 py-1 rounded border border-amber-200">(x', y') = (cx + (x-cx)*cosθ - (y-cy)*sinθ, cy + (x-cx)*sinθ + (y-cy)*cosθ)</code></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Primitives</h3>
+                        <div class="space-y-3">
+                            <div class="border rounded-lg overflow-hidden">
+                                <button class="flex justify-between items-center w-full p-4 bg-amber-50 hover:bg-amber-100" data-toggle="prim-constants">
+                                    <span class="font-semibold text-lg text-amber-800">Constants & Actions</span>
+                                    <span class="toggle-icon text-amber-800 font-bold text-xl">►</span>
+                                </button>
+                                <div class="toggle-content p-4 bg-white" id="prim-constants">
+                                    <p class="text-stone-600">These are predefined values that control the graphics system. <br>
+                                        <strong>Constants:</strong> Values for colors (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">RED</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">BLUE</code>), fill patterns, and line styles. <br>
+                                        <strong>Actions:</strong> Functions that initialize the system (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>) or close it (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">closegraph()</code>).
+                                    <!-- saving/loading demo moved to Core Concepts to keep interactive examples together -->
+                                    <p class="text-stone-600">These aren't new operators, but rather how standard C operators (like <code class="bg-stone-200 px-1 py-0.5 rounded">+</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">-</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">*</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">/</code>) are used to calculate coordinates, sizes, and new positions for drawing and animation.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg overflow-hidden">
+                                <button class="flex justify-between items-center w-full p-4 bg-amber-50 hover:bg-amber-100" data-toggle="prim-variables">
+                                    <span class="font-semibold text-lg text-amber-800">Variables</span>
+                                    <span class="toggle-icon text-amber-800 font-bold text-xl">►</span>
+                                </button>
+                                <div class="toggle-content p-4 bg-white" id="prim-variables">
+                                    <p class="text-stone-600">Variables are essential for dynamic graphics. They store screen coordinates (x, y), object properties (width, height, radius), and state (current color, position, velocity). Animation is impossible without them.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Plotting & Transformations</h3>
+                        <div class="space-y-3">
+                            <div class="border rounded-lg overflow-hidden">
+                                <button class="flex justify-between items-center w-full p-4 bg-amber-50 hover:bg-amber-100" data-toggle="plot-plotting">
+                                    <span class="font-semibold text-lg text-amber-800">Plotting</span>
+                                    <span class="toggle-icon text-amber-800 font-bold text-xl">►</span>
+                                </button>
+                                <div class="toggle-content p-4 bg-white" id="plot-plotting">
+                                    <p class="text-stone-600">This refers to the core drawing commands:
+                                        <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">putpixel(x, y, color)</code>: The most basic, draws a single dot.
+                                        <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">line(x1, y1, x2, y2)</code>: Draws a line between two points.
+                                        <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">rectangle(x1, y1, x2, y2)</code>: Draws a box.
+                                        <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">circle(x, y, radius)</code>: Draws a circle.
+                                        <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">setfillstyle()</code> & <code class="bg-stone-200 px-1 py-0.5 rounded">floodfill()</code>: Used to fill enclosed shapes with color.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg overflow-hidden">
+                                <button class="flex justify-between items-center w-full p-4 bg-amber-50 hover:bg-amber-100" data-toggle="plot-transforms">
+                                    <span class="font-semibold text-lg text-amber-800">Geometric Transformations</span>
+                                    <span class="toggle-icon text-amber-800 font-bold text-xl">►</span>
+                                </button>
+                                <div class="toggle-content p-4 bg-white" id="plot-transforms">
+                                    <p class="text-stone-600">In Turbo-C, transformations were often done manually by changing the variables used for plotting.
+                                        <br><strong>Translation (Moving):</strong> Adding an offset to an object's (x, y) coordinates before redrawing it.
+                                        <br><strong>Scaling (Resizing):</strong> Multiplying an object's width and height by a factor.
+                                        <br><strong>Rotation:</strong> Applying trigonometric functions (sine, cosine) to an object's coordinates to calculate its new position around a central point.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="concepts" class="content-section">
+                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">2. Core Concepts: Structure & Motion</h2>
+                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                    Once you have the fundamentals, the next step is organization and dynamism. "Display Subroutines" explore how to create reusable drawing functions, while the "Concept of Animation" shows how to string individual drawings together to create the illusion of movement.
+                </p>
+                <div class="space-y-6">
+                    <!-- Display Subroutines - Centered with increased width -->
+                    <div class="flex justify-center">
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                            <h3 class="text-2xl font-semibold text-amber-700 mb-4">Display Subroutines</h3>
+                            <p class="text-stone-600">
+                                These are simply C functions that bundle drawing commands. Instead of writing the code for a car 10 times, you would create a single function: <code class="bg-stone-200 px-1 py-0.5 rounded">void drawCar(int x, int y, int color)</code>.
+                                <br><br>
+                                This function would contain all the <code class="bg-stone-200 px-1 py-0.5 rounded">line()</code> and <code class="bg-stone-200 px-1 py-0.5 rounded">circle()</code> calls needed to draw a car at the given (x, y) position. This makes code reusable, readable, and much easier to manage, especially for complex scenes or animations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Demos - Full width -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Interactive Demos & Turbo-C Program Screen</h3>
+                        <p class="text-stone-600 mb-4">Live demos are grouped here so you can run the animation, inspect the step log, and view a small Turbo-C program that implements the same idea.</p>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <!-- Animation concept -->
+                            <div class="p-3 bg-stone-50 rounded-lg border">
+                                <h4 class="font-semibold text-amber-800 mb-2">Concept of Animation</h4>
+                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                    <canvas id="animConceptCanvas"></canvas>
+                                </div>
+                                <div class="flex gap-2 mt-3">
+                                    <button id="animStartBtn2" class="bg-amber-700 text-white font-semibold py-1 px-3 rounded-full">Start</button>
+                                    <button id="animStopBtn2" class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded-full">Stop</button>
+                                    <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded-full show-code" data-code="anim">Show Code</button>
+                                </div>
+                                <div id="anim-steps-2" class="text-sm text-stone-600 mt-2 h-24 overflow-y-auto p-2 bg-stone-50 rounded-md border">Steps will appear here...</div>
+                            </div>
+
+                            <!-- Save / Load demo -->
+                            <div class="p-3 bg-stone-50 rounded-lg border">
+                                <h4 class="font-semibold text-amber-800 mb-2">Saving & Loading</h4>
+                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                    <canvas id="saveLoadCanvas2"></canvas>
+                                </div>
+                                <div class="flex gap-1 mt-3">
+                                    <button id="saveImgBtn2" class="bg-amber-700 text-white font-semibold py-1 px-2 rounded text-sm">Save</button>
+                                    <label class="bg-amber-100 text-amber-800 font-semibold py-1 px-2 rounded cursor-pointer text-sm">
+                                        Load
+                                        <input id="loadImgInput2" type="file" accept="image/*" style="display:none">
+                                    </label>
+                                    <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-2 rounded show-code text-sm" data-code="save">Code</button>
+                                </div>
+                            </div>
+
+                            <!-- Towers of Hanoi -->
+                            <div class="p-3 bg-stone-50 rounded-lg border">
+                                <h4 class="font-semibold text-amber-800 mb-2">Towers of Hanoi</h4>
+                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                    <canvas id="hanoiCanvas2"></canvas>
+                                </div>
+                                <div class="flex gap-2 mt-3">
+                                    <button id="animateHanoiBtn2" class="bg-amber-700 text-white font-semibold py-1 px-3 rounded-full">Animate (3)</button>
+                                    <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded-full show-code" data-code="hanoi">Show Code</button>
+                                </div>
+                                <div id="hanoi-steps-2" class="text-sm text-stone-600 mt-2 h-24 overflow-y-auto p-2 bg-stone-50 rounded-md border">Steps will appear here...</div>
+                            </div>
+                        </div>
+
+                        <div id="demoStatus" class="mt-3 text-sm text-stone-500">Demo status: initializing...</div>
+
+                        <div class="mt-4">
+                            <h4 class="font-semibold text-amber-800 mb-2">Turbo-C Example (Program Screen)</h4>
+                            <pre id="tcCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-48 overflow-auto text-sm">// Select a demo and click "Show Code" to view a small Turbo-C program here.</pre>
+                        </div>
+                    </div>
+
+                    <!-- Concept of Animation - Centered with increased width -->
+                    <div class="flex justify-center">
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                            <h3 class="text-2xl font-semibold text-amber-700 mb-4">Concept of Animation</h3>
+                            <p class="text-stone-600">
+                                Animation in Turbo-C was a manual process that created an illusion of motion. It was achieved through a simple, repetitive loop:
+                                <br><br>
+                                <ol class="list-decimal list-inside space-y-2">
+                                    <li><strong>Draw:</strong> Call your display subroutines (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">drawCar(x, y)</code>) to draw the object at its current position.</li>
+                                    <li><strong>Delay:</strong> Use a function like <code class="bg-stone-200 px-1 py-0.5 rounded">delay(milliseconds)</code> to pause execution briefly, allowing the human eye to see the frame.</li>
+                                    <li><strong>Clear:</strong> Erase the object by drawing it again in the background color, or clear the entire screen with <code class="bg-stone-200 px-1 py-0.5 rounded">cleardevice()</code>.</li>
+                                    <li><strong>Update:</strong> Change the variables that control the object's state (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">x = x + 1</code> to move it to the right).</li>
+                                    <li><strong>Repeat:</strong> Loop back to step 1.</li>
+                                </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="applications" class="content-section">
+                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">3. Applications: Bringing it to Life</h2>
+                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                    This is where the concepts come together. We'll look at how to persist your creations by saving and loading them, and explore how animation can be used to visualize complex processes, like sorting algorithms or the classic "Towers of Hanoi" puzzle.
+                </p>
+                <div class="flex justify-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Saving, Loading & Printing</h3>
+                        <p class="text-stone-600">
+                            Turbo-C provided functions to save a part of the screen to disk and load it back later.
+                            <br><br>
+                            • <code class="bg-stone-200 px-1 py-0.5 rounded">getimage()</code> was used to capture a rectangular area of the screen and store it in memory.
+                            <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">putimage()</code> would draw that stored image back onto the screen.
+                            <br><br>
+                            By writing the in-memory data to a file, you could "save" an image. Reading it back from the file and using <code class="bg-stone-200 px-1 py-0.5 rounded">putimage()</code> would "load" it. "Printing" was more complex, often requiring third-party libraries or writing raw data to the printer port.
+                        </p>
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4 mt-6">Animated Sorting</h3>
+                        <p class="text-stone-600">
+                            The same animation loop could be used to visualize algorithms. For a Bubble Sort, you would draw an array of vertical bars representing numbers. When the algorithm swapped two numbers, you would animate the two corresponding bars moving to their new positions, helping the programmer "see" the algorithm work.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            // Intersection Observer for automatic active state on scroll
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -60% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        navButtons.forEach(btn => {
+                            const targetId = btn.getAttribute('data-target');
+                            if (targetId === sectionId) {
+                                btn.classList.add('active', 'bg-amber-700', 'text-white');
+                                btn.classList.remove('bg-amber-100', 'text-amber-800');
+                            } else {
+                                btn.classList.remove('active', 'bg-amber-700', 'text-white');
+                                btn.classList.add('bg-amber-100', 'text-amber-800');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all content sections
+            contentSections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            const togglers = document.querySelectorAll('[data-toggle]');
+            
+            togglers.forEach(toggler => {
+                toggler.addEventListener('click', () => {
+                    const targetId = toggler.getAttribute('data-toggle');
+                    const targetContent = document.getElementById(targetId);
+                    const icon = toggler.querySelector('.toggle-icon');
+                    
+                    if (targetContent) {
+                        targetContent.classList.toggle('show');
+                        icon.classList.toggle('rotated');
+                    }
+                });
+            });
+
+            // Towers of Hanoi (moved into Core Concepts): use new IDs with suffix 2
+            const canvas = document.getElementById('hanoiCanvas2');
+            const ctx = canvas ? canvas.getContext('2d') : null;
+            const animateBtn = document.getElementById('animateHanoiBtn2');
+            const stepsDiv = document.getElementById('hanoi-steps-2');
+
+            const numDisks = 3;
+            const diskColors = ['#dc2626', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'];
+            const pegWidth = 10;
+            const diskHeight = 20;
+            const pegNames = ['A', 'B', 'C'];
+            
+            let canvasWidth, canvasHeight;
+            let pegs = [];
+            let moves = [];
+            let animationInterval = null;
+            let isAnimating = false;
+
+            function initialize() {
+                if (animationInterval) {
+                    clearInterval(animationInterval);
+                }
+                isAnimating = false;
+                animateBtn.disabled = false;
+                animateBtn.textContent = 'Animate (3 Disks)';
+                moves = [];
+                pegs = [
+                    Array.from({ length: numDisks }, (_, i) => numDisks - i),
+                    [],
+                    []
+                ];
+                stepsDiv.innerHTML = 'Click "Animate" to start the simulation.';
+                if (canvas && ctx) {
+                    resizeCanvas();
+                    draw();
+                }
+            }
+
+            function resizeCanvas() {
+                // devicePixelRatio-aware resize
+                const dpr = window.devicePixelRatio || 1;
+                const cssW = canvas.clientWidth;
+                const cssH = canvas.clientHeight;
+                canvas.width = Math.max(1, Math.floor(cssW * dpr));
+                canvas.height = Math.max(1, Math.floor(cssH * dpr));
+                // use CSS pixels for layout math and scale the context
+                canvasWidth = cssW;
+                canvasHeight = cssH;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                draw();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                ctx.fillStyle = '#f5f5f4';
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                
+                const pegHeight = canvasHeight * 0.7;
+                const pegY = canvasHeight * 0.85;
+                const baseWidth = canvasWidth * 0.9;
+                const baseHeight = 10;
+                
+                ctx.fillStyle = '#57534e';
+                ctx.fillRect((canvasWidth - baseWidth) / 2, pegY, baseWidth, baseHeight);
+                
+                for (let i = 0; i < 3; i++) {
+                    const pegX = canvasWidth * (0.2 + i * 0.3);
+                    ctx.fillRect(pegX - pegWidth / 2, pegY - pegHeight, pegWidth, pegHeight);
+                    
+                    pegs[i].forEach((diskSize, j) => {
+                        drawDisk(i, j, diskSize);
+                    });
+                }
+            }
+
+            function drawDisk(pegIndex, diskIndex, diskSize) {
+                const maxDiskWidth = canvasWidth / 3.5;
+                const minDiskWidth = 30;
+                const diskWidth = minDiskWidth + (maxDiskWidth - minDiskWidth) * (diskSize - 1) / (numDisks - 1);
+                const pegX = canvasWidth * (0.2 + pegIndex * 0.3);
+                const diskY = canvasHeight * 0.85 - (diskIndex + 1) * (diskHeight + 2);
+                
+                ctx.fillStyle = diskColors[diskSize - 1] || '#333';
+                ctx.fillRect(pegX - diskWidth / 2, diskY, diskWidth, diskHeight);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(diskSize, pegX, diskY + diskHeight / 2);
+            }
+
+            function hanoi(n, from, to, aux) {
+                if (n > 0) {
+                    hanoi(n - 1, from, aux, to);
+                    moves.push({ from, to });
+                    hanoi(n - 1, aux, to, from);
+                }
+            }
+
+            function animate() {
+                if (isAnimating || !moves.length) {
+                    isAnimating = false;
+                    animateBtn.disabled = false;
+                    animateBtn.textContent = 'Reset';
+                    if (animationInterval) clearInterval(animationInterval);
+                    return;
+                }
+
+                const move = moves.shift();
+                const disk = pegs[move.from].pop();
+                pegs[move.to].push(disk);
+                
+                draw();
+                
+                stepsDiv.innerHTML += `Move disk ${disk} from Peg ${pegNames[move.from]} to Peg ${pegNames[move.to]}<br>`;
+                stepsDiv.scrollTop = stepsDiv.scrollHeight;
+            }
+
+            if (animateBtn) {
+                animateBtn.addEventListener('click', () => {
+                    if (isAnimating) return;
+
+                    if (animateBtn.textContent === 'Reset') {
+                        initialize();
+                        return;
+                    }
+                    
+                    initialize();
+                    hanoi(numDisks, 0, 2, 1);
+                    
+                    isAnimating = true;
+                    animateBtn.disabled = true;
+                    animateBtn.textContent = 'Animating...';
+                    stepsDiv.innerHTML = '';
+                    
+                    animationInterval = setInterval(animate, 1000);
+                });
+            }
+
+            if (canvas && ctx) window.addEventListener('resize', resizeCanvas);
+            // delay initialization to ensure DOM is fully ready
+            setTimeout(() => {
+                initialize();
+            }, 50);
+        });
+    </script>
+    <script>
+        // Consolidated interactive demos script (animation, save/load/capture, and code viewer)
+        document.addEventListener('DOMContentLoaded', () => {
+            const demoStatus = document.getElementById('demoStatus');
+
+            // --- Animation concept demo ---
+            (function setupAnimation() {
+                const animCanvas = document.getElementById('animConceptCanvas') || document.getElementById('animConceptCanvas2');
+                const animStartBtn = document.getElementById('animStartBtn2') || document.getElementById('animStartBtn');
+                const animStopBtn = document.getElementById('animStopBtn2') || document.getElementById('animStopBtn');
+                const animSteps = document.getElementById('anim-steps-2') || document.getElementById('anim-steps');
+                if (!animCanvas || !animStartBtn || !animStopBtn || !animSteps) return;
+
+                const ctx = animCanvas.getContext('2d');
+                let cssW = 0, cssH = 0, dpr = 1;
+                function resize() {
+                    dpr = window.devicePixelRatio || 1;
+                    cssW = animCanvas.clientWidth;
+                    cssH = animCanvas.clientHeight;
+                    animCanvas.width = Math.max(1, Math.floor(cssW * dpr));
+                    animCanvas.height = Math.max(1, Math.floor(cssH * dpr));
+                    // work in CSS pixels by scaling the context
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                }
+
+                let x = 40, vx = 2, radius = 12;
+                let running = false;
+                let raf = null;
+
+                function draw() {
+                    // clear using CSS coordinates
+                    ctx.clearRect(0, 0, cssW, cssH);
+                    // background
+                    ctx.fillStyle = '#fff7ed';
+                    ctx.fillRect(0, 0, cssW, cssH);
+                    // disk
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(x, cssH / 2, radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    animSteps.innerHTML = 'Draw → Delay → Clear → Update<br>' +
+                        `Position: ${Math.round(x)}, Velocity: ${vx}`;
+
+                    x += vx;
+                    if (x + radius > cssW || x - radius < 0) vx = -vx;
+
+                    if (running) raf = requestAnimationFrame(draw);
+                }
+
+                animStartBtn.addEventListener('click', () => {
+                    if (running) return;
+                    running = true;
+                    if (!cssW || !cssH) resize(); // ensure canvas is sized
+                    x = Math.min(Math.max(radius + 2, x), cssW - radius - 2);
+                    raf = requestAnimationFrame(draw);
+                });
+                animStopBtn.addEventListener('click', () => {
+                    running = false;
+                    if (raf) cancelAnimationFrame(raf);
+                    raf = null;
+                });
+
+                window.addEventListener('resize', () => {
+                    const wasRunning = running;
+                    resize();
+                    if (!wasRunning) draw();
+                });
+
+                // initial layout: ensure canvas sizes and draws immediately
+                setTimeout(() => {
+                    resize();
+                    draw();
+                }, 50); // delay to ensure DOM is ready
+                if (demoStatus) demoStatus.textContent += ' | Animation demo ready';
+                if (demoStatus) demoStatus.textContent += ' | Animation demo ready';
+            })();
+
+            // --- Save / Load / Capture demo ---
+            (function setupSaveLoad() {
+                const saveCanvas = document.getElementById('saveLoadCanvas2') || document.getElementById('saveLoadCanvas');
+                const saveBtn = document.getElementById('saveImgBtn2') || document.getElementById('saveImgBtn');
+                const loadInput = document.getElementById('loadImgInput2') || document.getElementById('loadImgInput');
+                const captureBtn = document.getElementById('captureRegionBtn2') || document.getElementById('captureRegionBtn');
+                const capturedCanvas = document.getElementById('capturedCanvas2') || document.getElementById('capturedCanvas');
+                if (!saveCanvas || !saveBtn || !loadInput || !captureBtn || !capturedCanvas) return;
+
+                const ctxS = saveCanvas.getContext('2d');
+                const ctxC = capturedCanvas.getContext('2d');
+                let cssW = 0, cssH = 0, dpr = 1;
+
+                function resize() {
+                    dpr = window.devicePixelRatio || 1;
+                    cssW = saveCanvas.clientWidth;
+                    cssH = saveCanvas.clientHeight;
+                    saveCanvas.width = Math.max(1, Math.floor(cssW * dpr));
+                    saveCanvas.height = Math.max(1, Math.floor(cssH * dpr));
+                    ctxS.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                    const ccw = capturedCanvas.clientWidth;
+                    const cch = capturedCanvas.clientHeight;
+                    // set captured canvas bitmap to match CSS size * dpr for crispness
+                    capturedCanvas.width = Math.max(1, Math.floor(ccw * dpr));
+                    capturedCanvas.height = Math.max(1, Math.floor(cch * dpr));
+                    ctxC.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                    drawSample();
+                }
+
+                function drawSample() {
+                    // draw example using CSS coordinates
+                    ctxS.clearRect(0, 0, cssW, cssH);
+                    ctxS.fillStyle = '#eef2ff';
+                    ctxS.fillRect(0, 0, cssW, cssH);
+                    ctxS.fillStyle = '#f97316';
+                    ctxS.fillRect(20, 20, 80, 50);
+                    ctxS.fillStyle = '#06b6d4';
+                    ctxS.beginPath(); ctxS.arc(cssW - 60, 50, 30, 0, Math.PI * 2); ctxS.fill();
+                    ctxS.fillStyle = '#111827';
+                    ctxS.font = 'bold 14px sans-serif';
+                    ctxS.fillText('Sample Scene', 20, cssH - 20);
+                }
+
+                saveBtn.addEventListener('click', () => {
+                    try {
+                        const data = saveCanvas.toDataURL('image/png');
+                        const a = document.createElement('a');
+                        a.href = data; a.download = 'canvas-image.png'; document.body.appendChild(a); a.click(); a.remove();
+                    } catch (err) {
+                        console.error(err);
+                        if (demoStatus) demoStatus.textContent += ' | Save failed (canvas may be tainted by cross-origin image)';
+                    }
+                });
+
+                // load user-provided file
+                loadInput.addEventListener('change', (ev) => {
+                    const file = ev.target.files && ev.target.files[0];
+                    if (!file) return;
+                    const img = new Image();
+                    img.onload = () => {
+                        ctxS.clearRect(0, 0, cssW, cssH);
+                        ctxS.drawImage(img, 0, 0, cssW, cssH);
+                    };
+                    img.onerror = () => { if (demoStatus) demoStatus.textContent += ' | Could not load chosen image'; };
+                    img.src = URL.createObjectURL(file);
+                });
+
+                // load example external image (may still fail if remote blocks CORS)
+                const loadExampleButton = document.createElement('button');
+                loadExampleButton.type = 'button';
+                loadExampleButton.className = 'ml-2 px-2 py-1 rounded bg-amber-700 text-white';
+                loadExampleButton.textContent = 'Load Example Image';
+                if (loadInput && loadInput.parentNode) loadInput.parentNode.appendChild(loadExampleButton);
+                loadExampleButton.addEventListener('click', () => {
+                    const url = 'https://rahulkumarpahwa.tech/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdwtcjjxwc%2Fimage%2Fupload%2Fv1743647690%2Fportfolio%2Fpu-gandhi-bhawan_qhij5d.jpg&w=1080&q=75';
+                    const img = new Image(); img.crossOrigin = 'Anonymous';
+                    img.onload = () => { ctxS.clearRect(0,0,cssW,cssH); ctxS.drawImage(img, 0, 0, cssW, cssH); };
+                    img.onerror = () => { if (demoStatus) demoStatus.textContent += ' | Example image failed to load (CORS?)'; };
+                    img.src = url;
+                });
+
+                // capture center region using getImageData for correct device-pixel handling
+                captureBtn.addEventListener('click', () => {
+                    try {
+                        const devW = saveCanvas.width; // device pixels
+                        const devH = saveCanvas.height;
+                        const wDev = Math.min(Math.floor(devW * 0.5), devW);
+                        const hDev = Math.min(Math.floor(devH * 0.5), devH);
+                        const sx = Math.floor((devW - wDev) / 2);
+                        const sy = Math.floor((devH - hDev) / 2);
+                        const imgData = ctxS.getImageData(sx / dpr, sy / dpr, wDev / dpr, hDev / dpr);
+                        // size captured canvas to device pixels for clarity
+                        capturedCanvas.width = Math.max(1, Math.floor((wDev / dpr) * dpr));
+                        capturedCanvas.height = Math.max(1, Math.floor((hDev / dpr) * dpr));
+                        ctxC.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        // putImageData expects full resolution; scale by dpr is already handled
+                        ctxC.putImageData(imgData, 0, 0);
+                    } catch (err) {
+                        console.error(err);
+                        if (demoStatus) demoStatus.textContent += ' | Capture failed';
+                    }
+                });
+
+                window.addEventListener('resize', resize);
+                // delay to ensure DOM is ready, then draw
+                setTimeout(() => {
+                    resize();
+                }, 50);
+                if (demoStatus) demoStatus.textContent += ' | Save/Load demo ready';
+            })();
+
+            // --- Show Code handler: use template literals so newlines are preserved correctly ---
+            (function setupCodeViewer() {
+                const codeDisplay = document.getElementById('tcCode');
+                document.querySelectorAll('.show-code').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const which = btn.getAttribute('data-code');
+                        let code = '';
+                        if (which === 'anim') {
+                            code = `#include <graphics.h>
+#include <conio.h>
+
+void drawDisk(int x, int y, int r, int color) {
+    setfillstyle(SOLID_FILL, color);
+    circle(x, y, r);
+    floodfill(x, y, color);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+    int x = 50, vx = 5;
+    while(!kbhit()) {
+        cleardevice();
+        drawDisk(x, 100, 20, RED);
+        delay(50);
+        x += vx;
+        if (x > getmaxx() - 20 || x < 20) vx = -vx;
+    }
+    closegraph();
+    return 0;
+}`;
+                        } else if (which === 'save') {
+                            code = `#include <graphics.h>
+#include <stdio.h>
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+    // draw sample scene
+    setcolor(RED); rectangle(20,20,100,70);
+    setcolor(BLUE); circle(200,50,30);
+
+    // capture a region (pseudo)
+    void *buf = malloc( getmaxx() * getmaxy() ); // simplified
+    getimage(20,20,220,120, buf);
+    // write buf to file (platform-specific)
+    // FILE *f = fopen("image.bin","wb"); fwrite(buf, size, 1, f); fclose(f);
+
+    // restore
+    putimage(300,20, buf, COPY_PUT);
+
+    getch();
+    closegraph();
+    return 0;
+}`;
+                        } else if (which === 'hanoi') {
+                            code = `#include <graphics.h>
+#include <conio.h>
+
+void drawPeg(int x) { line(x, 50, x, 200); }
+void drawDisk(int x, int y, int w, int color) { setfillstyle(SOLID_FILL,color); rectangle(x-w/2,y-w/4,x+w/2,y+w/4); floodfill(x,y,color); }
+
+void hanoi(int n, int from, int to, int aux) {
+    if (n>0) {
+        hanoi(n-1, from, aux, to); // move disk from->to
+        // draw move (pseudo)
+        hanoi(n-1, aux, to, from);
+    }
+}
+
+int main(){ int gd=DETECT,gm; initgraph(&gd,&gm,"");
+    // setup and call hanoi with draw calls inside
+    getch(); closegraph(); return 0; }`;
+                        }
+                        if (codeDisplay) codeDisplay.textContent = code;
+                    });
+                });
+            })();
+
+            // mark towers ready (if hanoi steps area exists)
+            const hanoiSteps = document.getElementById('hanoi-steps-2');
+            if (demoStatus && hanoiSteps) demoStatus.textContent += ' | Towers of Hanoi demo ready';
+        });
+    </script>
+    <!-- External demo scripts (separation of concerns) -->
+    <script src="anim.js"></script>
+    <script src="saveload.js"></script>
+    <script src="hanoi.js"></script>
+    <script src="codeviewer.js"></script>
+</body>
+</html>
