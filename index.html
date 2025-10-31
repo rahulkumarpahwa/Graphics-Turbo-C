@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Guide to Turbo-C Graphics</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -88,28 +88,50 @@
             <section id="home" class="content-section active">
                 <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">Welcome to the Guide</h2>
                 <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
-                    This application translates the core topics of the Turbo-C graphics language into an interactive, explorable format. Instead of a static list, this guide groups concepts into functional themes: the basic building blocks, the core techniques, and practical applications. Use the navigation above to move between sections and click on any topic to reveal more details.
+                    This application translates the core topics of the Turbo-C graphics language into an interactive, explorable format. Use the navigation above to move between sections and click on any topic to reveal more details.
                 </p>
                 <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
+                    <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-100 flex items-center justify-center flex-col gap-5">
                         <h3 class="text-2xl font-semibold text-amber-700 mb-2">What Was Turbo-C Graphics?</h3>
                         <p class="text-stone-600">
                             The Turbo-C <code class="bg-stone-200 px-1 py-0.5 rounded">graphics.h</code> library was a popular and simple way for students and hobbyists in the late 1980s and 90s to learn computer graphics. It provided a set of functions to draw pixels, lines, circles, and rectangles, and to handle colors and basic animations, all within the MS-DOS environment.
                         </p>
+                         <div>
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Historical Context</h3>
+                        <ul class="list-disc">
+                            <li>Turbo-C graphics.h was a lightweight graphics library bundled with the Turbo-C compiler.</li>
+                            <li>It was widely used in the late 1980s and 1990s, especially in educational settings and hobbyist projects.</li>
+                            <li>It operated within the MS-DOS environment, meaning it ran on early personal computers using command-line interfaces.</li>
+        
+
+                        </ul>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Why Explore This Now?</h3>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Why It Still Matters?</h3>
                         <p class="text-stone-600">
-                            While technologically obsolete, the *concepts* remain fundamental. Understanding how to build images from primitives, manage a display, and create animation from scratch provides a strong foundation for understanding modern graphics APIs, game engines, and data visualization libraries (like the one used to build this page!).
-                        </p>
+Although obsolete today, the guide emphasizes that Turbo-C graphics teaches fundamental concepts:
+<ul class="list-disc">
+
+<li>Primitives: How to build visuals from basic shapes.</li>
+
+<li>Transformations: How to move, scale, and rotate objects.</li>
+
+<li>Animation: How to simulate motion using variable updates and redraw cycles.</li>
+
+<li>These ideas are foundational for understanding modern graphics engines, game development, and data visualization tools.</li>
+ </ul>                       
+</p>
+                        
                     </div>
+                   
                 </div>
             </section>
 
             <section id="fundamentals" class="content-section">
                 <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">1. Fundamentals: The Building Blocks</h2>
                 <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
-                    This section covers the absolute basics. "Primitives" are the foundational elements like variables and operators that define *what* you can draw, while "Plotting & Transformations" cover the actions of *how* you draw and manipulate those shapes on the screen. Click each topic to learn more.
+                    This section covers the absolute basics. "Primitives" are the foundational elements like variables and operators that define *what* you can draw, while "Plotting & Transformations" cover the actions of *how* you draw and manipulate those shapes on the screen.
                 </p>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 md:col-span-2">
@@ -118,10 +140,10 @@
                             <div>
                                 <h4 class="font-semibold text-amber-800">Primitives (Constants, Actions, Operators, Variables)</h4>
                                 <p class="mt-2">Primitives are the smallest building blocks: constants (predefined colors and styles), actions (system calls), the C operators used to compute positions, and the variables that hold state. Examples:
-                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">RED, BLUE</code> — color constants.
-                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">closegraph()</code> — actions to start/stop the driver.
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">RED, BLUE</code> — Used to specify colors and styles in drawing functions.
+                                    <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>, <code class="bg-stone-200 px-1 py-0.5 rounded">closegraph()</code> — actions to start/stop the driver. These are essential for setting up and tearing down the graphics environment.
                                     <br>• Operators like <code class="bg-stone-200 px-1 py-0.5 rounded">+</code> and <code class="bg-stone-200 px-1 py-0.5 rounded">*</code> are used to compute coordinates (e.g., centerX = x + width/2).
-                                    <br>• Variables store coordinates, sizes, colors, and animation state (for example <code class="bg-stone-200 px-1 py-0.5 rounded">int x, y, radius, color;</code>).</p>
+                                    <br>• Variables store coordinates, sizes, colors, and animation state. Store dynamic state like coordinates, sizes, colors, and animation parameters. (for example <code class="bg-stone-200 px-1 py-0.5 rounded">int x, y, radius, color;</code>).</p>
                             </div>
 
                             <div>
@@ -241,7 +263,7 @@
                             <!-- Animation concept -->
                             <div class="p-3 bg-stone-50 rounded-lg border">
                                 <h4 class="font-semibold text-amber-800 mb-2">Concept of Animation</h4>
-                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                <div class="chart-container bg-white rounded-md p-2" style="height: 140px">
                                     <canvas id="animConceptCanvas"></canvas>
                                 </div>
                                 <div class="flex gap-2 mt-3">
