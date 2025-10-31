@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+
     <title>Interactive Guide to Turbo-C Graphics</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
@@ -75,8 +77,10 @@
         </header>
 
         <nav class="sticky top-0 z-50 bg-amber-50 py-4 -mx-4 px-4 md:-mx-8 md:px-8 mb-8 md:mb-12">
-            <div class="flex flex-wrap justify-center gap-2">
+                <div class="flex flex-wrap justify-center gap-2">
+                
                 <a href="#home" class="nav-btn active text-white bg-amber-700 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="home">Home</a>
+                <a href="#structure" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="structure">0. Structure</a>
                 <a href="#fundamentals" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="fundamentals">1. Fundamentals</a>
                 <a href="#concepts" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="concepts">2. Core Concepts</a>
                 <a href="#applications" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="applications">3. Applications</a>
@@ -84,6 +88,7 @@
         </nav>
 
         <div id="content-container">
+            
             
             <section id="home" class="content-section active">
                 <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">Welcome to the Guide</h2>
@@ -125,6 +130,57 @@ Although obsolete today, the guide emphasizes that Turbo-C graphics teaches fund
                         
                     </div>
                    
+                </div>
+            </section>
+
+
+            <section id="structure" class="content-section">
+                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">Structure: Program Skeleton</h2>
+                <div class="flex justify-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-3">Minimal Turbo-C Graphics Program</h3>
+                        <p class="text-stone-600 mb-3">Below is a minimal program skeleton using the classic <code class="bg-stone-200 px-1 py-0.5 rounded">graphics.h</code> API. Each line includes an inline comment that explains its purpose.</p>
+                        <pre id="structureCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-56 overflow-auto text-sm">#include &lt;graphics.h&gt;   // Provides the Turbo-C graphics API (putpixel, line, circle, etc.)
+#include &lt;stdio.h&gt;      // Standard I/O (printf, etc.)
+#include &lt;conio.h&gt;      // Console I/O helpers (getch)
+
+int main() {
+    int gd = DETECT, gm;                  // gd: graphics driver, gm: graphics mode; DETECT auto-selects driver
+    initgraph(&gd, &gm, "");            // Initialize the graphics system and set video mode
+    /* --- Place drawing calls here (putpixel, line, circle, rectangle, etc.) --- */
+    getch();                              // Wait for a key press so the window stays visible
+    closegraph();                         // Shut down graphics mode and restore normal console
+    return 0;                             // Exit the program
+}
+</pre>
+
+                        <div class="mt-4">
+                            <h4 class="font-semibold text-amber-800 mb-2">Program structure (overview)</h4>
+                            <p class="text-stone-600">This program demonstrates the typical lifecycle of a Turbo-C graphics application:</p>
+                            <ol class="list-decimal list-inside text-stone-600 space-y-2">
+                                <li><strong>Includes:</strong> Header files bring in the graphics API and any standard helpers you need.</li>
+                                <li><strong>main:</strong> Entry point where you initialize the graphics driver and mode with <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>.</li>
+                                <li><strong>Drawing:</strong> Call drawing routines (putpixel, line, rectangle, circle, etc.) while the graphics mode is active.</li>
+                                <li><strong>Wait:</strong> Use <code class="bg-stone-200 px-1 py-0.5 rounded">getch()</code> or a delay to allow the user to view the output.</li>
+                                <li><strong>Cleanup:</strong> Call <code class="bg-stone-200 px-1 py-0.5 rounded">closegraph()</code> to return the machine to text mode and free resources.</li>
+                            </ol>
+
+                            <h5 class="font-semibold text-amber-800 mt-4 mb-2">Key graphics functions & keywords</h5>
+                            <div class="space-y-2 text-stone-600">
+                                <p><strong>DETECT</strong> — A special constant passed to <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code> that tells the library to auto-detect the best graphics driver for the environment.</p>
+                                <p><strong>initgraph(int *gd, int *gm, const char *path)</strong> — Initializes the graphics system. Parameters are pointers to driver and mode variables; the path is an optional driver path in older implementations.</p>
+                                <p><strong>closegraph()</strong> — Restores the display to the original text mode and releases graphics resources.</p>
+                                <p><strong>putpixel(int x, int y, int color)</strong> — Draws a single pixel at coordinates (x,y) using the specified color.</p>
+                                <p><strong>line(int x1, int y1, int x2, int y2)</strong> — Draws a straight line between two points; often implemented via Bresenham's algorithm.</p>
+                                <p><strong>rectangle(int x1, int y1, int x2, int y2)</strong> — Draws an axis-aligned rectangle outline defined by the two corner coordinates.</p>
+                                <p><strong>circle(int x, int y, int r)</strong> — Draws a circle with center (x,y) and radius r using an efficient midpoint algorithm.</p>
+                                <p><strong>setfillstyle()</strong>, <strong>floodfill()</strong> — Used together to fill shapes with a pattern or color.</p>
+                                <p><strong>getimage()</strong>, <strong>putimage()</strong> — Capture and restore rectangular regions of the screen (useful for sprites and saving parts of the display).</p>
+                                <p><strong>cleardevice()</strong> — Clears the entire graphics screen (useful between animation frames).</p>
+                                <p><strong>getch()</strong> — Waits for a key press (commonly used to pause the program so the output can be inspected).</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -380,6 +436,34 @@ Although obsolete today, the guide emphasizes that Turbo-C graphics teaches fund
             </section>
         </div>
     </main>
+
+    <footer class="bg-[#92400e] text-white border-t border-[#7a2f09] mt-8">
+        <div class="container mx-auto p-4 md:p-6 max-w-6xl text-center">
+            <div class="flex items-center justify-center gap-4 mb-3">
+                <a href="https://rahulkumarpahwa.tech" aria-label="Website" target="_blank" rel="noopener noreferrer" class="text-white hover:text-[#fffbeb]">
+                    <!-- Globe SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 6h-2.07a15.9 15.9 0 0 0-1.07-3.12A8.02 8.02 0 0 1 18.9 8zM12 4c.86 0 1.97 2.18 2.55 5H9.45C10.03 6.18 11.14 4 12 4zM4.1 8a8.02 8.02 0 0 1 3.14-3.12A15.9 15.9 0 0 0 5.1 8zM4.1 16a15.9 15.9 0 0 0 2.14 3.12A8.02 8.02 0 0 1 4.1 16zM12 20c-.86 0-1.97-2.18-2.55-5h5.1C13.97 17.82 12.86 20 12 20zm4.45-1.88c.44-.9.76-1.92.95-3.12h2.07a8.02 8.02 0 0 1-3.02 3.12zM16.55 12c0-1.6-.2-3.09-.55-4.4H8c-.35 1.31-.55 2.8-.55 4.4s.2 3.09.55 4.4h8c.35-1.31.55-2.8.55-4.4z"/></svg>
+                </a>
+
+                <a href="https://github.com/rahulkumarpahwa" aria-label="GitHub" target="_blank" rel="noopener noreferrer" class="text-white hover:text-[#fffbeb]">
+                    <!-- GitHub SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.38 7.86 10.89.58.11.79-.25.79-.56 0-.28-.01-1.02-.01-2-3.2.69-3.88-1.42-3.88-1.42-.53-1.35-1.3-1.71-1.3-1.71-1.06-.72.08-.7.08-.7 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.75-1.56-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.45.11-3.02 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.5 3.17-1.18 3.17-1.18.63 1.57.23 2.73.11 3.02.74.81 1.19 1.84 1.19 3.1 0 4.43-2.69 5.4-5.25 5.68.42.36.8 1.08.8 2.18 0 1.57-.01 2.84-.01 3.23 0 .31.21.68.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
+                </a>
+
+                <a href="https://linkedin.com/in/rahulkumarpahwa" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" class="text-white hover:text-[#fffbeb]">
+                    <!-- LinkedIn SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6S0 4.88 0 3.5 1.11 1 2.49 1 4.98 2.12 4.98 3.5zM.24 8.98h4.5V24h-4.5V8.98zM9.5 8.98h4.32v2.04h.06c.6-1.14 2.06-2.34 4.25-2.34 4.55 0 5.39 2.99 5.39 6.88V24h-4.5v-7.26c0-1.73-.03-3.96-2.41-3.96-2.41 0-2.78 1.88-2.78 3.83V24H9.5V8.98z"/></svg>
+                </a>
+
+                <a href="https://x.com/rahulkumarpahwa" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer" class="text-white hover:text-[#fffbeb]">
+                    <!-- X / Twitter SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.28 4.28 0 0 0 1.88-2.37 8.59 8.59 0 0 1-2.71 1.04 4.28 4.28 0 0 0-7.3 3.9A12.14 12.14 0 0 1 3.15 4.6a4.28 4.28 0 0 0 1.32 5.72 4.22 4.22 0 0 1-1.94-.54v.05a4.28 4.28 0 0 0 3.43 4.2 4.3 4.3 0 0 1-1.93.07 4.28 4.28 0 0 0 3.99 2.97A8.59 8.59 0 0 1 2 19.54a12.1 12.1 0 0 0 6.56 1.92c7.88 0 12.2-6.53 12.2-12.2 0-.19 0-.39-.01-.58A8.7 8.7 0 0 0 22.46 6z"/></svg>
+                </a>
+            </div>
+
+            <div class="text-sm text-white">&copy; Rahul Kumar Pahwa 2025-26</div>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
