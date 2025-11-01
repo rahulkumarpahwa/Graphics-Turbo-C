@@ -72,7 +72,7 @@
 
     <main class="container mx-auto p-4 md:p-8 max-w-6xl min-h-screen">
         <header class="text-center mb-8 md:mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-amber-800 mb-2">Interactive Guide to Turbo-C Graphics</h1>
+            <a href="/" class="text-4xl md:text-5xl font-bold text-amber-800 mb-2">Interactive Guide to Turbo-C Graphics</a>
             <p class="text-lg md:text-xl text-stone-600">An exploration of the concepts from the classic <code class="bg-stone-200 px-2 py-1 rounded">graphics.h</code> library</p>
         </header>
 
@@ -223,6 +223,12 @@ int main() {
                                         <span class="mr-2">•</span>
                                         <p><strong class="text-amber-800">Rotation:</strong> <code class="bg-white px-2 py-1 rounded border border-amber-200">(x', y') = (cx + (x-cx)*cosθ - (y-cy)*sinθ, cy + (x-cx)*sinθ + (y-cy)*cosθ)</code></p>
                                     </div>
+
+                                    <p class="text-stone-600">In Turbo-C, transformations were often done manually by changing the variables used for plotting.
+                                        <br><strong>Translation (Moving):</strong> Adding an offset to an object's (x, y) coordinates before redrawing it.
+                                        <br><strong>Scaling (Resizing):</strong> Multiplying an object's width and height by a factor.
+                                        <br><strong>Rotation:</strong> Applying trigonometric functions (sine, cosine) to an object's coordinates to calculate its new position around a central point.
+                                    </p>
                                 </div>
                             </div>
                             <!-- Quick C examples + static previews for plotting primitives -->
