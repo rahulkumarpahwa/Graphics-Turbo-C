@@ -437,6 +437,36 @@ int main() {
                         <p class="text-stone-600">
                             The same animation loop could be used to visualize algorithms. For a Bubble Sort, you would draw an array of vertical bars representing numbers. When the algorithm swapped two numbers, you would animate the two corresponding bars moving to their new positions, helping the programmer "see" the algorithm work.
                         </p>
+                        <div class="mt-4 p-4 bg-white rounded-lg border border-amber-100">
+                            <h4 class="font-semibold text-amber-800 mb-2">Bubble Sort — Visualization & Localized Redraw</h4>
+                            <p class="text-stone-600 text-sm mb-3">Visualizing sorting algorithms is a classic application of BGI, translating computational complexity and data rearrangement into dynamic graphical changes. The Bubble Sort algorithm, known for its iterative comparison and swapping of adjacent elements, serves as a strong pedagogical example.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-stone-600 text-sm font-semibold mb-2">A. Visualization Mapping</p>
+                                    <p class="text-stone-600 text-sm">Array elements are represented as vertical bars: the bar height maps to the numerical value, and the horizontal x-position maps to the index. During comparisons, the two bars are highlighted; on swaps the bars are redrawn at their new positions.</p>
+
+                                    <p class="text-stone-600 text-sm mt-3 font-semibold mb-2">B. Implementation Strategy</p>
+                                    <p class="text-stone-600 text-sm">To avoid flicker and reduce CPU work, the demo uses localized redraw: only the bar rectangles for indices being compared/swapped are erased and redrawn. A short <code class="bg-stone-200 px-1 py-0.5 rounded">delay()</code>-like pause is used between compare/erase/draw steps to make the animation perceptible.</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex flex-wrap gap-2 items-center mb-3">
+                                        <button id="shuffleBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded text-sm">Shuffle</button>
+                                        <button id="startBubbleBtn" class="bg-amber-700 text-white font-semibold py-1 px-3 rounded text-sm">Start</button>
+                                        <button id="stopBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded text-sm">Stop</button>
+                                        <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded show-code text-sm" data-code="bubblesort">Show C Code</button>
+                                    </div>
+
+                                    <div class="chart-container bg-white rounded-md p-2" style="height:180px">
+                                        <canvas id="bubbleSortCanvas"></canvas>
+                                    </div>
+                                    <div id="bubbleSteps" class="text-sm text-stone-600 mt-2 h-24 overflow-y-auto p-2 bg-stone-50 rounded-md border">Click Shuffle to randomize, then Start to animate Bubble Sort.</div>
+                                    <div id="bubbleValues" class="text-sm text-stone-600 mt-2 p-2 bg-stone-50 rounded-md border">Initial values will appear here.</div>
+                                    <label class="text-sm font-semibold text-amber-800 mt-3 block">Bubble Sort C Example</label>
+                                    <pre id="bubbleCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-48 overflow-auto text-sm">// Click "Show C Code" to view the Bubble Sort example here.</pre>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -846,6 +876,216 @@ int main() {
                 if (demoStatus) demoStatus.textContent += ' | Save/Load demo ready';
             })();
 
+            // --- Bubble Sort visualization (localized redraw) ---
+            (function setupBubbleSort() {
+                const canvas = document.getElementById('bubbleSortCanvas');
+                const startBtn = document.getElementById('startBubbleBtn');
+                const stopBtn = document.getElementById('stopBubbleBtn');
+                const shuffleBtn = document.getElementById('shuffleBubbleBtn');
+                const steps = document.getElementById('bubbleSteps');
+                if (!canvas || !startBtn || !stopBtn || !shuffleBtn || !steps) return;
+
+                const ctx = canvas.getContext('2d');
+                const valuesEl = document.getElementById('bubbleValues');
+                let arr = [];
+                let N = 36; // number of bars
+                let running = false;
+                let speed = 80; // ms delay
+
+                function resize() {
+                    const dpr = window.devicePixelRatio || 1;
+                    const cssW = canvas.clientWidth || canvas.parentElement.clientWidth;
+                    const cssH = canvas.clientHeight || 160;
+                    canvas.width = Math.max(1, Math.floor(cssW * dpr));
+                    canvas.height = Math.max(1, Math.floor(cssH * dpr));
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    drawAll();
+                }
+
+                function makeArray() {
+                    arr = Array.from({ length: N }, (_, i) => Math.floor((i + 1) / N * 100) + 4);
+                }
+
+                function shuffleArray() {
+                    for (let i = arr.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                    }
+                    if (valuesEl) valuesEl.textContent = arr.join(', ');
+                }
+
+                function clearBar(i, padding = 2) {
+                    const w = canvas.clientWidth / N || 10;
+                    const x = i * w;
+                    ctx.clearRect(x - padding, 0, w + padding * 2, canvas.clientHeight);
+                }
+
+                function drawBar(i, color) {
+                    const w = canvas.clientWidth / N || 10;
+                    const barW = Math.max(2, w * 0.85);
+                    const x = i * w + (w - barW) / 2;
+                    const h = (arr[i] / 104) * (canvas.clientHeight - 10);
+                    const y = canvas.clientHeight - h;
+                    ctx.fillStyle = color || '#f59e0b';
+                    ctx.fillRect(x, y, barW, h);
+                    // outline
+                    ctx.strokeStyle = '#ffffff22';
+                    ctx.strokeRect(x, y, barW, h);
+                }
+
+                function drawAll(highlights = {}) {
+                    // full redraw (used on resize); otherwise callers will erase/draw locally
+                    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+                    for (let i = 0; i < arr.length; i++) {
+                        const color = highlights[i] || '#f59e0b';
+                        drawBar(i, color);
+                    }
+                }
+
+                function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+                async function bubbleSortAnimate() {
+                    running = true;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    steps.innerHTML = '';
+                    const n = arr.length;
+                    for (let i = 0; i < n - 1 && running; i++) {
+                        for (let j = 0; j < n - 1 - i && running; j++) {
+                            // highlight comparison
+                            clearBar(j); clearBar(j + 1);
+                            drawBar(j, '#fde68a'); // compare color (amber-200)
+                            drawBar(j + 1, '#fde68a');
+                            steps.innerHTML += `Compare index ${j} and ${j + 1}<br>`;
+                            steps.scrollTop = steps.scrollHeight;
+                            await sleep(speed);
+
+                            if (arr[j] > arr[j + 1]) {
+                                // swap visually using localized redraw
+                                steps.innerHTML += `Swap ${arr[j]} and ${arr[j + 1]}<br>`;
+                                const tmp = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = tmp;
+                                // erase both and redraw swapped values
+                                clearBar(j); clearBar(j + 1);
+                                drawBar(j, '#f97316'); // swap color (orange)
+                                drawBar(j + 1, '#f97316');
+                                await sleep(speed);
+                            }
+
+                            // restore normal color for these bars
+                            clearBar(j); clearBar(j + 1);
+                            drawBar(j); drawBar(j + 1);
+                            await sleep(Math.max(10, speed / 3));
+                        }
+                    }
+
+                    running = false;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    steps.innerHTML += 'Sorting complete.';
+                }
+
+                startBtn.addEventListener('click', () => {
+                    if (running) return;
+                    bubbleSortAnimate().catch(err => console.error(err));
+                });
+
+                // ensure Show C Code button works for this demo (fallback if global handler misses it)
+                const localShowBtn = document.querySelector('.show-code[data-code="bubblesort"]');
+                if (localShowBtn) {
+                    localShowBtn.addEventListener('click', () => {
+                        const tc = document.getElementById('tcCode');
+                        if (!tc) return;
+                        const bubbleLocal = `#include <graphics.h>
+#include <conio.h>
+#include <stdlib.h>
+
+// Simple Bubble Sort visualization (conceptual BGI example)
+// - drawBars() draws vertical bars for each array element
+// - inner loop highlights compared bars, erases them, swaps data, and redraws only the affected bars
+
+void drawBar(int i, int value, int N, int width, int height) {
+    int x = i * width + 2;
+    int h = (value * height) / 104;
+    setfillstyle(SOLID_FILL, YELLOW);
+    bar(x, height - h, x + width - 4, height);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    int N = 30;
+    int arr[30];
+    for (int i = 0; i < N; i++) arr[i] = (i + 1) * 3 + 5;
+    // shuffle (simple)
+    for (int i = N - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+
+    int width = getmaxx() / N;
+    int height = getmaxy() - 20;
+
+    // initial draw
+    for (int i = 0; i < N; i++) drawBar(i, arr[i], N, width, height);
+
+    for (int i = 0; i < N - 1; i++) {
+        for (int j = 0; j < N - 1 - i; j++) {
+            // highlight comparison
+            setcolor(RED);
+            rectangle(j * width + 2, height - (arr[j] * height) / 104, j * width + width - 2, height);
+            rectangle((j+1) * width + 2, height - (arr[j+1] * height) / 104, (j+1) * width + width - 2, height);
+            delay(80);
+
+            if (arr[j] > arr[j+1]) {
+                // swap values
+                int t = arr[j]; arr[j] = arr[j+1]; arr[j+1] = t;
+                // localized redraw: erase and draw only the two bars
+                setfillstyle(SOLID_FILL, BLACK);
+                bar(j * width + 2, 0, j * width + width - 2, height);
+                bar((j+1) * width + 2, 0, (j+1) * width + width - 2, height);
+                drawBar(j, arr[j], N, width, height);
+                drawBar(j+1, arr[j+1], N, width, height);
+                delay(80);
+            }
+            // restore color
+            setcolor(WHITE);
+        }
+    }
+
+    getch();
+    closegraph();
+    return 0;
+`;
+                        const bcLocal = document.getElementById('bubbleCode');
+                        if (tc) tc.textContent = bubbleLocal;
+                        if (bcLocal) bcLocal.textContent = bubbleLocal;
+                    });
+                }
+
+                stopBtn.addEventListener('click', () => {
+                    running = false;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    steps.innerHTML += ' | Stopped by user.';
+                });
+
+                shuffleBtn.addEventListener('click', () => {
+                    if (running) return;
+                    shuffleArray();
+                    drawAll();
+                    steps.innerHTML = 'Shuffled array.';
+                });
+
+                // initialize
+                makeArray();
+                shuffleArray();
+                if (valuesEl) valuesEl.textContent = arr.join(', ');
+                setTimeout(resize, 50);
+                window.addEventListener('resize', resize);
+                stopBtn.disabled = true;
+            })();
+
             // --- Show Code handler: use template literals so newlines are preserved correctly ---
             (function setupCodeViewer() {
                 const codeDisplay = document.getElementById('tcCode');
@@ -1029,10 +1269,73 @@ int main() {
     closegraph();
     return 0;
 }`;
+                        const bubbleSortCode = `#include <graphics.h>
+#include <conio.h>
+#include <stdlib.h>
+
+// Simple Bubble Sort visualization (conceptual BGI example)
+// - drawBars() draws vertical bars for each array element
+// - inner loop highlights compared bars, erases them, swaps data, and redraws only the affected bars
+
+void drawBar(int i, int value, int N, int width, int height) {
+    int x = i * width + 2;
+    int h = (value * height) / 104;
+    setfillstyle(SOLID_FILL, YELLOW);
+    bar(x, height - h, x + width - 4, height);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+
+    int N = 30;
+    int arr[30];
+    for (int i = 0; i < N; i++) arr[i] = (i + 1) * 3 + 5;
+    // shuffle (simple)
+    for (int i = N - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+
+    int width = getmaxx() / N;
+    int height = getmaxy() - 20;
+
+    // initial draw
+    for (int i = 0; i < N; i++) drawBar(i, arr[i], N, width, height);
+
+    for (int i = 0; i < N - 1; i++) {
+        for (int j = 0; j < N - 1 - i; j++) {
+            // highlight comparison
+            setcolor(RED);
+            rectangle(j * width + 2, height - (arr[j] * height) / 104, j * width + width - 2, height);
+            rectangle((j+1) * width + 2, height - (arr[j+1] * height) / 104, (j+1) * width + width - 2, height);
+            delay(80);
+
+            if (arr[j] > arr[j+1]) {
+                // swap values
+                int t = arr[j]; arr[j] = arr[j+1]; arr[j+1] = t;
+                // localized redraw: erase and draw only the two bars
+                setfillstyle(SOLID_FILL, BLACK);
+                bar(j * width + 2, 0, j * width + width - 2, height);
+                bar((j+1) * width + 2, 0, (j+1) * width + width - 2, height);
+                drawBar(j, arr[j], N, width, height);
+                drawBar(j+1, arr[j+1], N, width, height);
+                delay(80);
+            }
+            // restore color
+            setcolor(WHITE);
+        }
+    }
+
+    getch();
+    closegraph();
+    return 0;
+}`;
 
                         switch (which) {
                             case 'anim': code = animCode; break;
                             case 'save': code = saveCode; break;
+                            case 'bubblesort': code = bubbleSortCode; break;
                             case 'hanoi': code = hanoiCode; break;
                             case 'primitives': code = primitivesCode; break;
                             case 'putpixel': code = putpixelCode; break;
@@ -1043,6 +1346,11 @@ int main() {
                         }
 
                         if (codeDisplay) codeDisplay.textContent = code;
+                        // also populate the local bubble code pane when requested
+                        if (which === 'bubblesort') {
+                            const bc = document.getElementById('bubbleCode');
+                            if (bc) bc.textContent = code;
+                        }
 
                         // local plotting area
                         const plottingCode = document.getElementById('plottingCode');
