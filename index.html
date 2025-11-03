@@ -61,29 +61,92 @@
             width: 100%;
             height: 140px; /* default, can be overridden by inline style */
         }
+        /* Mobile nav slide-down animation */
+        .nav-links {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+        }
+        .nav-links.open {
+            max-height: 400px;
+            opacity: 1;
+            padding-top: 1rem;
+        }
+        /* Tablet/Desktop: nav always visible */
+        @media (min-width: 768px) {
+            .nav-links {
+                max-height: none !important;
+                opacity: 1 !important;
+                padding-top: 0 !important;
+            }
+        }
+        /* Mobile responsiveness tweaks - refined breakpoints */
+        @media (max-width: 767px) {
+            /* Stack nav links when toggled; slide down animation via classes above */
+            .nav-links { 
+                flex-direction: column; 
+                gap: 0.75rem; 
+                align-items: stretch;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            /* Adjust chart/canvas heights for mobile readability */
+            .chart-container { height: 180px; }
+            /* Responsive typography */
+            h1, .text-4xl { font-size: 1.875rem !important; }
+            h2, .text-3xl { font-size: 1.5rem !important; }
+            h3, .text-2xl { font-size: 1.25rem !important; }
+            h4, .text-xl { font-size: 1.125rem !important; }
+            p, .text-lg { font-size: 1rem !important; }
+            /* Reduce pre/code font size on small screens */
+            pre { font-size: 11px; line-height: 1.4; padding: 0.5rem !important; }
+            code { font-size: 0.875rem; }
+            /* Make footer icons stack vertically on mobile */
+            .footer-stack { flex-direction: column; gap: 0.75rem; }
+            /* Tighter spacing for cards and sections */
+            .content-section { padding-top: 1.5rem; padding-bottom: 1.5rem; scroll-margin-top: 80px; }
+            .bg-white { padding: 1rem !important; }
+            /* Button sizing on mobile */
+            button, .nav-btn { font-size: 0.875rem; padding: 0.5rem 1rem; }
+            /* Grid adjustments */
+            .grid { gap: 1rem !important; }
+            /* Section margins */
+            header { margin-bottom: 2rem !important; }
+            nav { margin-bottom: 2rem !important; }
+        }
+        /* Very small phones (320px-480px) */
+        @media (max-width: 480px) {
+            .chart-container { height: 200px; }
+            h1, .text-4xl { font-size: 1.5rem !important; }
+            pre { font-size: 10px; max-height: 180px !important; }
+            .bg-white { padding: 0.75rem !important; }
+            /* Extra compact spacing */
+            .content-section { padding-top: 1rem; padding-bottom: 1rem; }
+        }
     </style>
 </head>
 <body class="bg-amber-50 text-stone-800">
-    
-    <!-- Chosen Palette: Warm Amber & Stone -->
-    <!-- Application Structure Plan: The application transforms the provided syllabus/topic list into a task-oriented, thematic SPA. Instead of a linear list, the structure uses a main navigation bar to group topics into three logical themes: "Fundamentals" (the tools), "Core Concepts" (the techniques), and "Applications" (the results). This grouping is chosen for usability, allowing a user to explore based on their level of understanding. Each section uses interactive toggleable cards to present detailed information, preventing cognitive overload. The "Applications" section includes a live canvas-based animation of "Towers of Hanoi" to make the abstract "Animated Algorithms" topic tangible and engaging. This structure facilitates non-linear exploration and active learning. -->
-    <!-- Visualization & Content Choices: Report Info: "Animated algorithms for Sorting, Towers of Hanoi" -> Goal: Demonstrate the "Concept of Animation" in a practical, engaging way. -> Viz/Presentation Method: A dynamic HTML Canvas animation rendered with vanilla JavaScript. -> Interaction: A user clicks an "Animate" button to start the visualization. The algorithm's steps are displayed as text while the animation runs. -> Justification: This is far more effective than static text for explaining an "animated algorithm." It provides a "wow" factor and makes the concept concrete. -> Library/Method: Vanilla JS Canvas API. | Report Info: Topic lists (Primitives, Plotting, etc.) -> Goal: Organize and present hierarchical text information. -> Viz/Presentation Method: Interactive "accordion" style toggles made with HTML/Tailwind/JS. -> Interaction: User clicks a header to expand/collapse the content. -> Justification: This fits the "easily consumable" goal by hiding complexity until requested. | -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
     <main class="container mx-auto p-4 md:p-8 max-w-6xl min-h-screen">
-        <header class="text-center mb-8 md:mb-12">
-            <a href="/" class="text-4xl md:text-5xl font-bold text-amber-800 mb-2">Interactive Guide to Turbo-C Graphics</a>
-            <p class="text-lg md:text-xl text-stone-600">An exploration of the concepts from the classic <code class="bg-stone-200 px-2 py-1 rounded">graphics.h</code> library</p>
+        <header class="text-center mb-6 md:mb-8 px-4">
+            <a href="/" class="text-3xl md:text-4xl lg:text-5xl font-bold text-amber-800 mb-2 block">Interactive Guide to Turbo-C Graphics</a>
+            <p class="text-base md:text-lg lg:text-xl text-stone-600">An exploration of the concepts from the classic <code class="bg-stone-200 px-2 py-1 rounded text-sm md:text-base">graphics.h</code> library</p>
         </header>
 
         <nav class="sticky top-0 z-50 bg-amber-50 py-4 -mx-4 px-4 md:-mx-8 md:px-8 mb-8 md:mb-12">
-                <div class="flex flex-wrap justify-center gap-2">
-                
-                <a href="#home" class="nav-btn active text-white bg-amber-700 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="home">Home</a>
-                <a href="#structure" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="structure">0. Structure</a>
-                <a href="#fundamentals" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="fundamentals">1. Fundamentals</a>
-                <a href="#concepts" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="concepts">2. Core Concepts</a>
-                <a href="#applications" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full" data-target="applications">3. Applications</a>
+            <!-- Mobile nav toggle (visible on small screens) -->
+            <div class="flex items-center justify-between md:hidden mb-2">
+                <span class="text-sm font-semibold text-amber-800">Menu</span>
+                <button id="mobileNavToggle" aria-controls="mainNavLinks" aria-expanded="false" class="p-2.5 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                </button>
+            </div>
+            <div id="mainNavLinks" class="nav-links flex flex-wrap justify-center gap-2 md:gap-2">
+                <a href="#home" class="nav-btn active text-white bg-amber-700 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full w-full md:w-auto text-center" data-target="home">Home</a>
+                <a href="#structure" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full w-full md:w-auto text-center" data-target="structure">0. Structure</a>
+                <a href="#fundamentals" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full w-full md:w-auto text-center" data-target="fundamentals">1. Fundamentals</a>
+                <a href="#concepts" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full w-full md:w-auto text-center" data-target="concepts">2. Core Concepts</a>
+                <a href="#applications" class="nav-btn bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold text-sm py-1.5 px-3 md:py-2 md:px-5 rounded-full w-full md:w-auto text-center" data-target="applications">3. Applications</a>
             </div>
         </nav>
 
@@ -95,15 +158,15 @@
                 <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
                     This application translates the core topics of the Turbo-C graphics language into an interactive, explorable format. Use the navigation above to move between sections and click on any topic to reveal more details.
                 </p>
-                <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-100 flex items-center justify-center flex-col gap-5">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">What Was Turbo-C Graphics?</h3>
-                        <p class="text-stone-600">
+                <div class="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+                    <div class="bg-white p-4 md:p-8 rounded-xl shadow-lg border border-amber-100 flex items-center justify-center flex-col gap-3 md:gap-5">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-2">What Was Turbo-C Graphics?</h3>
+                        <p class="text-sm md:text-base text-stone-600">
                             The Turbo-C <code class="bg-stone-200 px-1 py-0.5 rounded">graphics.h</code> library was a popular and simple way for students and hobbyists in the late 1980s and 90s to learn computer graphics. It provided a set of functions to draw pixels, lines, circles, and rectangles, and to handle colors and basic animations, all within the MS-DOS environment.
                         </p>
                          <div>
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Historical Context</h3>
-                        <ul class="list-disc">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-2">Historical Context</h3>
+                        <ul class="list-disc text-sm md:text-base pl-4">
                             <li>Turbo-C graphics.h was a lightweight graphics library bundled with the Turbo-C compiler.</li>
                             <li>It was widely used in the late 1980s and 1990s, especially in educational settings and hobbyist projects.</li>
                             <li>It operated within the MS-DOS environment, meaning it ran on early personal computers using command-line interfaces.</li>
@@ -112,11 +175,11 @@
                         </ul>
                     </div>
                     </div>
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-100">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-2">Why It Still Matters?</h3>
-                        <p class="text-stone-600">
+                    <div class="bg-white p-4 md:p-8 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-2">Why It Still Matters?</h3>
+                        <p class="text-sm md:text-base text-stone-600">
 Although obsolete today, the guide emphasizes that Turbo-C graphics teaches fundamental concepts:
-<ul class="list-disc">
+<ul class="list-disc pl-4 text-sm md:text-base">
 
 <li>Primitives: How to build visuals from basic shapes.</li>
 
@@ -135,11 +198,11 @@ Although obsolete today, the guide emphasizes that Turbo-C graphics teaches fund
 
 
             <section id="structure" class="content-section">
-                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">Structure: Program Skeleton</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-amber-800 mb-4 text-center">Structure: Program Skeleton</h2>
                 <div class="flex justify-center">
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-3">Minimal Turbo-C Graphics Program</h3>
-                        <p class="text-stone-600 mb-3">Below is a minimal program skeleton using the classic <code class="bg-stone-200 px-1 py-0.5 rounded">graphics.h</code> API. Each line includes an inline comment that explains its purpose.</p>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-3">Minimal Turbo-C Graphics Program</h3>
+                        <p class="text-sm md:text-base text-stone-600 mb-3">Below is a minimal program skeleton using the classic <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">graphics.h</code> API. Each line includes an inline comment that explains its purpose.</p>
                         <pre id="structureCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-56 overflow-auto text-sm">#include &lt;graphics.h&gt;   // Provides the Turbo-C graphics API (putpixel, line, circle, etc.)
 #include &lt;stdio.h&gt;      // Standard I/O (printf, etc.)
 #include &lt;conio.h&gt;      // Console I/O helpers (getch)
@@ -155,9 +218,9 @@ int main() {
 </pre>
 
                         <div class="mt-4">
-                            <h4 class="font-semibold text-amber-800 mb-2">Program structure (overview)</h4>
-                            <p class="text-stone-600">This program demonstrates the typical lifecycle of a Turbo-C graphics application:</p>
-                            <ol class="list-decimal list-inside text-stone-600 space-y-2">
+                            <h4 class="text-base md:text-lg font-semibold text-amber-800 mb-2">Program structure (overview)</h4>
+                            <p class="text-sm md:text-base text-stone-600">This program demonstrates the typical lifecycle of a Turbo-C graphics application:</p>
+                            <ol class="list-decimal list-inside text-sm md:text-base text-stone-600 space-y-2 pl-2">
                                 <li><strong>Includes:</strong> Header files bring in the graphics API and any standard helpers you need.</li>
                                 <li><strong>main:</strong> Entry point where you initialize the graphics driver and mode with <code class="bg-stone-200 px-1 py-0.5 rounded">initgraph()</code>.</li>
                                 <li><strong>Drawing:</strong> Call drawing routines (putpixel, line, rectangle, circle, etc.) while the graphics mode is active.</li>
@@ -320,33 +383,33 @@ int main() {
             </section>
 
             <section id="concepts" class="content-section">
-                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">2. Core Concepts: Structure & Motion</h2>
-                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-amber-800 mb-4 text-center">2. Core Concepts: Structure & Motion</h2>
+                <p class="text-base md:text-lg text-stone-700 max-w-3xl mx-auto text-center mb-6 md:mb-8 px-4">
                     Once you have the fundamentals, the next step is organization and dynamism. "Display Subroutines" explore how to create reusable drawing functions, while the "Concept of Animation" shows how to string individual drawings together to create the illusion of movement.
                 </p>
-                <div class="space-y-6">
+                <div class="space-y-4 md:space-y-6">
                     <!-- Display Subroutines - Centered with increased width -->
                     <div class="flex justify-center">
-                        <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
-                            <h3 class="text-2xl font-semibold text-amber-700 mb-4">Display Subroutines</h3>
-                            <p class="text-stone-600">
-                                These are simply C functions that bundle drawing commands. Instead of writing the code for a car 10 times, you would create a single function: <code class="bg-stone-200 px-1 py-0.5 rounded">void drawCar(int x, int y, int color)</code>.
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                            <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-3 md:mb-4">Display Subroutines</h3>
+                            <p class="text-sm md:text-base text-stone-600">
+                                These are simply C functions that bundle drawing commands. Instead of writing the code for a car 10 times, you would create a single function: <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">void drawCar(int x, int y, int color)</code>.
                                 <br><br>
-                                This function would contain all the <code class="bg-stone-200 px-1 py-0.5 rounded">line()</code> and <code class="bg-stone-200 px-1 py-0.5 rounded">circle()</code> calls needed to draw a car at the given (x, y) position. This makes code reusable, readable, and much easier to manage, especially for complex scenes or animations.
+                                This function would contain all the <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">line()</code> and <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">circle()</code> calls needed to draw a car at the given (x, y) position. This makes code reusable, readable, and much easier to manage, especially for complex scenes or animations.
                             </p>
                         </div>
                     </div>
 
                     <!-- Interactive Demos - Full width -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Interactive Demos & Turbo-C Program Screen</h3>
-                        <p class="text-stone-600 mb-4">Live demos are grouped here so you can run the animation, inspect the step log, and view a small Turbo-C program that implements the same idea.</p>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-amber-100">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-3 md:mb-4">Interactive Demos & Turbo-C Program Screen</h3>
+                        <p class="text-sm md:text-base text-stone-600 mb-3 md:mb-4">Live demos are grouped here so you can run the animation, inspect the step log, and view a small Turbo-C program that implements the same idea.</p>
 
-                        <div class="grid md:grid-cols-3 gap-4">
+                        <div class="grid md:grid-cols-3 gap-3 md:gap-4">
                             <!-- Animation concept -->
                             <div class="p-3 bg-stone-50 rounded-lg border">
                                 <h4 class="font-semibold text-amber-800 mb-2">Concept of Animation</h4>
-                                <div class="chart-container bg-white rounded-md p-2" style="height: 140px">
+                                <div class="chart-container bg-white rounded-md p-2 h-36 md:h-44">
                                     <canvas id="animConceptCanvas"></canvas>
                                 </div>
                                 <div class="flex gap-2 mt-3">
@@ -360,7 +423,7 @@ int main() {
                             <!-- Save / Load demo -->
                             <div class="p-3 bg-stone-50 rounded-lg border">
                                 <h4 class="font-semibold text-amber-800 mb-2">Saving & Loading</h4>
-                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                <div class="chart-container bg-white rounded-md p-2 h-36 md:h-44">
                                     <canvas id="saveLoadCanvas2"></canvas>
                                 </div>
                                 <div class="flex gap-1 mt-3">
@@ -376,7 +439,7 @@ int main() {
                             <!-- Towers of Hanoi -->
                             <div class="p-3 bg-stone-50 rounded-lg border">
                                 <h4 class="font-semibold text-amber-800 mb-2">Towers of Hanoi</h4>
-                                <div class="chart-container bg-white rounded-md p-2" style="height:140px">
+                                <div class="chart-container bg-white rounded-md p-2 h-36 md:h-44">
                                     <canvas id="hanoiCanvas2"></canvas>
                                 </div>
                                 <div class="flex gap-2 mt-3">
@@ -389,26 +452,26 @@ int main() {
 
                         <div id="demoStatus" class="mt-3 text-sm text-stone-500">Demo status: initializing...</div>
 
-                        <div class="mt-4">
-                            <h4 class="font-semibold text-amber-800 mb-2">Turbo-C Example (Program Screen)</h4>
-                            <pre id="tcCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-48 overflow-auto text-sm">// Select a demo and click "Show Code" to view a small Turbo-C program here.</pre>
+                        <div class="mt-3 md:mt-4">
+                            <h4 class="font-semibold text-amber-800 mb-2 text-sm md:text-base">Turbo-C Example (Program Screen)</h4>
+                            <pre id="tcCode" class="bg-stone-900 text-amber-100 p-2 md:p-3 rounded max-h-48 overflow-auto text-xs md:text-sm">// Select a demo and click "Show Code" to view a small Turbo-C program here.</pre>
                             <!-- Primitive functions preview (static image) -->
-                            <div id="primitivePreview" class="mt-3 p-3 bg-white rounded border border-amber-100 hidden"></div>
+                            <div id="primitivePreview" class="mt-2 md:mt-3 p-2 md:p-3 bg-white rounded border border-amber-100 hidden"></div>
                         </div>
                     </div>
 
                     <!-- Concept of Animation - Centered with increased width -->
                     <div class="flex justify-center">
-                        <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
-                            <h3 class="text-2xl font-semibold text-amber-700 mb-4">Concept of Animation</h3>
-                            <p class="text-stone-600">
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                            <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-3 md:mb-4">Concept of Animation</h3>
+                            <p class="text-sm md:text-base text-stone-600">
                                 Animation in Turbo-C was a manual process that created an illusion of motion. It was achieved through a simple, repetitive loop:
                                 <br><br>
-                                <ol class="list-decimal list-inside space-y-2">
-                                    <li><strong>Draw:</strong> Call your display subroutines (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">drawCar(x, y)</code>) to draw the object at its current position.</li>
-                                    <li><strong>Delay:</strong> Use a function like <code class="bg-stone-200 px-1 py-0.5 rounded">delay(milliseconds)</code> to pause execution briefly, allowing the human eye to see the frame.</li>
-                                    <li><strong>Clear:</strong> Erase the object by drawing it again in the background color, or clear the entire screen with <code class="bg-stone-200 px-1 py-0.5 rounded">cleardevice()</code>.</li>
-                                    <li><strong>Update:</strong> Change the variables that control the object's state (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded">x = x + 1</code> to move it to the right).</li>
+                                <ol class="list-decimal list-inside space-y-2 pl-4 text-sm md:text-base">
+                                    <li><strong>Draw:</strong> Call your display subroutines (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">drawCar(x, y)</code>) to draw the object at its current position.</li>
+                                    <li><strong>Delay:</strong> Use a function like <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">delay(milliseconds)</code> to pause execution briefly, allowing the human eye to see the frame.</li>
+                                    <li><strong>Clear:</strong> Erase the object by drawing it again in the background color, or clear the entire screen with <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">cleardevice()</code>.</li>
+                                    <li><strong>Update:</strong> Change the variables that control the object's state (e.g., <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">x = x + 1</code> to move it to the right).</li>
                                     <li><strong>Repeat:</strong> Loop back to step 1.</li>
                                 </ol>
                             </p>
@@ -418,52 +481,62 @@ int main() {
             </section>
 
             <section id="applications" class="content-section">
-                <h2 class="text-3xl font-bold text-amber-800 mb-4 text-center">3. Applications: Bringing it to Life</h2>
-                <p class="text-lg text-stone-700 max-w-3xl mx-auto text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-amber-800 mb-4 text-center">3. Applications: Bringing it to Life</h2>
+                <p class="text-base md:text-lg text-stone-700 max-w-3xl mx-auto text-center mb-6 md:mb-8 px-4">
                     This is where the concepts come together. We'll look at how to persist your creations by saving and loading them, and explore how animation can be used to visualize complex processes, like sorting algorithms or the classic "Towers of Hanoi" puzzle.
                 </p>
-                <div class="flex justify-center">
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Saving, Loading & Printing</h3>
-                        <p class="text-stone-600">
+                
+                <!-- Saving, Loading & Printing -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                        <h3 class="text-xl md:text-2xl font-semibold text-amber-700 mb-3 md:mb-4">Saving, Loading & Printing</h3>
+                        <p class="text-sm md:text-base text-stone-600">
                             Turbo-C provided functions to save a part of the screen to disk and load it back later.
                             <br><br>
-                            • <code class="bg-stone-200 px-1 py-0.5 rounded">getimage()</code> was used to capture a rectangular area of the screen and store it in memory.
-                            <br>• <code class="bg-stone-200 px-1 py-0.5 rounded">putimage()</code> would draw that stored image back onto the screen.
+                            • <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">getimage()</code> was used to capture a rectangular area of the screen and store it in memory.
+                            <br>• <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">putimage()</code> would draw that stored image back onto the screen.
                             <br><br>
-                            By writing the in-memory data to a file, you could "save" an image. Reading it back from the file and using <code class="bg-stone-200 px-1 py-0.5 rounded">putimage()</code> would "load" it. "Printing" was more complex, often requiring third-party libraries or writing raw data to the printer port.
+                            By writing the in-memory data to a file, you could "save" an image. Reading it back from the file and using <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">putimage()</code> would "load" it. "Printing" was more complex, often requiring third-party libraries or writing raw data to the printer port.
                         </p>
-                        <h3 class="text-2xl font-semibold text-amber-700 mb-4 mt-6">Animated Sorting</h3>
-                        <p class="text-stone-600">
+                    </div>
+                </div>
+
+                <!-- Animated Sorting - Bubble Sort -->
+                <div class="flex justify-center">
+                    <div class="bg-white p-3 md:p-5 rounded-xl shadow-lg border border-amber-100 max-w-4xl w-full">
+                        <h3 class="text-lg md:text-xl font-semibold text-amber-700 mb-2 md:mb-3">Animated Sorting</h3>
+                        <p class="text-xs md:text-sm text-stone-600 mb-3">
                             The same animation loop could be used to visualize algorithms. For a Bubble Sort, you would draw an array of vertical bars representing numbers. When the algorithm swapped two numbers, you would animate the two corresponding bars moving to their new positions, helping the programmer "see" the algorithm work.
                         </p>
-                        <div class="mt-4 p-4 bg-white rounded-lg border border-amber-100">
-                            <h4 class="font-semibold text-amber-800 mb-2">Bubble Sort — Visualization & Localized Redraw</h4>
-                            <p class="text-stone-600 text-sm mb-3">Visualizing sorting algorithms is a classic application of BGI, translating computational complexity and data rearrangement into dynamic graphical changes. The Bubble Sort algorithm, known for its iterative comparison and swapping of adjacent elements, serves as a strong pedagogical example.</p>
-                            <div class="grid md:grid-cols-2 gap-4">
+                        
+                        <div class="p-2 md:p-3 bg-stone-50 rounded-lg border border-amber-100">
+                            <h4 class="font-semibold text-amber-800 mb-1.5 text-xs md:text-sm">Bubble Sort — Visualization & Localized Redraw</h4>
+                            <p class="text-stone-600 text-xs mb-2">Visualizing sorting algorithms is a classic application of BGI, translating computational complexity and data rearrangement into dynamic graphical changes. The Bubble Sort algorithm, known for its iterative comparison and swapping of adjacent elements, serves as a strong pedagogical example.</p>
+                            
+                            <div class="grid md:grid-cols-2 gap-2 md:gap-3">
                                 <div>
-                                    <p class="text-stone-600 text-sm font-semibold mb-2">A. Visualization Mapping</p>
-                                    <p class="text-stone-600 text-sm">Array elements are represented as vertical bars: the bar height maps to the numerical value, and the horizontal x-position maps to the index. During comparisons, the two bars are highlighted; on swaps the bars are redrawn at their new positions.</p>
+                                    <p class="text-stone-600 text-xs font-semibold mb-1">A. Visualization Mapping</p>
+                                    <p class="text-stone-600 text-xs mb-2">Array elements are represented as vertical bars: the bar height maps to the numerical value, and the horizontal x-position maps to the index. During comparisons, the two bars are highlighted; on swaps the bars are redrawn at their new positions.</p>
 
-                                    <p class="text-stone-600 text-sm mt-3 font-semibold mb-2">B. Implementation Strategy</p>
-                                    <p class="text-stone-600 text-sm">To avoid flicker and reduce CPU work, the demo uses localized redraw: only the bar rectangles for indices being compared/swapped are erased and redrawn. A short <code class="bg-stone-200 px-1 py-0.5 rounded">delay()</code>-like pause is used between compare/erase/draw steps to make the animation perceptible.</p>
+                                    <p class="text-stone-600 text-xs mt-2 font-semibold mb-1">B. Implementation Strategy</p>
+                                    <p class="text-stone-600 text-xs">To avoid flicker and reduce CPU work, the demo uses localized redraw: only the bar rectangles for indices being compared/swapped are erased and redrawn. A short <code class="bg-stone-200 px-0.5 py-0.5 rounded text-xs">delay()</code>-like pause is used between compare/erase/draw steps to make the animation perceptible.</p>
                                 </div>
 
                                 <div>
-                                    <div class="flex flex-wrap gap-2 items-center mb-3">
-                                        <button id="shuffleBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded text-sm">Shuffle</button>
-                                        <button id="startBubbleBtn" class="bg-amber-700 text-white font-semibold py-1 px-3 rounded text-sm">Start</button>
-                                        <button id="stopBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded text-sm">Stop</button>
-                                        <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-3 rounded show-code text-sm" data-code="bubblesort">Show C Code</button>
+                                    <div class="flex flex-wrap gap-1.5 items-center mb-2">
+                                        <button id="shuffleBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-2.5 rounded text-xs">Shuffle</button>
+                                        <button id="startBubbleBtn" class="bg-amber-700 text-white font-semibold py-1 px-2.5 rounded text-xs">Start</button>
+                                        <button id="stopBubbleBtn" class="bg-amber-100 text-amber-800 font-semibold py-1 px-2.5 rounded text-xs">Stop</button>
+                                        <button class="bg-amber-100 text-amber-800 font-semibold py-1 px-2.5 rounded show-code text-xs" data-code="bubblesort">Show C Code</button>
                                     </div>
 
-                                    <div class="chart-container bg-white rounded-md p-2" style="height:180px">
+                                    <div class="chart-container bg-white rounded-md p-1.5" style="height:150px">
                                         <canvas id="bubbleSortCanvas"></canvas>
                                     </div>
-                                    <div id="bubbleSteps" class="text-sm text-stone-600 mt-2 h-24 overflow-y-auto p-2 bg-stone-50 rounded-md border">Click Shuffle to randomize, then Start to animate Bubble Sort.</div>
-                                    <div id="bubbleValues" class="text-sm text-stone-600 mt-2 p-2 bg-stone-50 rounded-md border">Initial values will appear here.</div>
-                                    <label class="text-sm font-semibold text-amber-800 mt-3 block">Bubble Sort C Example</label>
-                                    <pre id="bubbleCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-48 overflow-auto text-sm">// Click "Show C Code" to view the Bubble Sort example here.</pre>
+                                    <div id="bubbleSteps" class="text-xs text-stone-600 mt-1.5 h-16 md:h-20 overflow-y-auto p-1.5 bg-stone-50 rounded-md border">Click Shuffle to randomize, then Start to animate Bubble Sort.</div>
+                                    <div id="bubbleValues" class="text-xs text-stone-600 mt-1.5 p-1.5 bg-stone-50 rounded-md border">Initial values will appear here.</div>
+                                    <label class="text-xs font-semibold text-amber-800 mt-2 block">Bubble Sort C Example</label>
+                                    <pre id="bubbleCode" class="bg-stone-900 text-amber-100 p-2 rounded max-h-32 md:max-h-40 overflow-x-auto overflow-y-auto text-xs whitespace-pre-wrap break-words">// Click "Show C Code" to view the Bubble Sort example here.</pre>
                                 </div>
                             </div>
                         </div>
@@ -473,9 +546,9 @@ int main() {
         </div>
     </main>
 
-    <footer class="bg-[#92400e] text-white border-t border-[#7a2f09] mt-8">
+    <footer class="bg-[#92400e] text-white border-t border-[#7a2f09] mt-6 md:mt-8">
         <div class="container mx-auto p-4 md:p-6 max-w-6xl text-center">
-            <div class="flex items-center justify-center gap-4 mb-3">
+            <div class="flex items-center justify-center gap-3 md:gap-4 mb-2 md:mb-3 footer-stack">
                 <a href="https://rahulkumarpahwa.tech" aria-label="Website" target="_blank" rel="noopener noreferrer" class="text-white hover:text-[#fffbeb]">
                     <!-- Globe SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 6h-2.07a15.9 15.9 0 0 0-1.07-3.12A8.02 8.02 0 0 1 18.9 8zM12 4c.86 0 1.97 2.18 2.55 5H9.45C10.03 6.18 11.14 4 12 4zM4.1 8a8.02 8.02 0 0 1 3.14-3.12A15.9 15.9 0 0 0 5.1 8zM4.1 16a15.9 15.9 0 0 0 2.14 3.12A8.02 8.02 0 0 1 4.1 16zM12 20c-.86 0-1.97-2.18-2.55-5h5.1C13.97 17.82 12.86 20 12 20zm4.45-1.88c.44-.9.76-1.92.95-3.12h2.07a8.02 8.02 0 0 1-3.02 3.12zM16.55 12c0-1.6-.2-3.09-.55-4.4H8c-.35 1.31-.55 2.8-.55 4.4s.2 3.09.55 4.4h8c.35-1.31.55-2.8.55-4.4z"/></svg>
@@ -702,6 +775,17 @@ int main() {
         // Consolidated interactive demos script (animation, save/load/capture, and code viewer)
         document.addEventListener('DOMContentLoaded', () => {
             const demoStatus = document.getElementById('demoStatus');
+
+            // Mobile nav toggle wiring: toggles the nav-links container on small screens
+            (function setupMobileNavToggle() {
+                const mobileToggle = document.getElementById('mobileNavToggle');
+                const navLinks = document.getElementById('mainNavLinks');
+                if (!mobileToggle || !navLinks) return;
+                mobileToggle.addEventListener('click', () => {
+                    const open = navLinks.classList.toggle('open');
+                    mobileToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+            })();
 
             // --- Animation concept demo ---
             (function setupAnimation() {
