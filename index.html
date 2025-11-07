@@ -379,6 +379,9 @@ int main() {
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- drawCar Demo -->
+                    
                 </div>
             </section>
 
@@ -397,6 +400,47 @@ int main() {
                                 <br><br>
                                 This function would contain all the <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">line()</code> and <code class="bg-stone-200 px-1 py-0.5 rounded text-xs md:text-sm">circle()</code> calls needed to draw a car at the given (x, y) position. This makes code reusable, readable, and much easier to manage, especially for complex scenes or animations.
                             </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-amber-100 md:col-span-2">
+                        <h3 class="text-2xl font-semibold text-amber-700 mb-4">Display Subroutines Example: Drawing a Car</h3>
+                        <p class="text-sm md:text-base text-stone-600 mb-4">
+                            This example demonstrates how to bundle multiple drawing commands into a reusable function. The <code class="bg-stone-200 px-1 py-0.5 rounded">drawCar()</code> function uses rectangles, circles, and fill operations to draw a simple car. Instead of repeating this code multiple times, you call the function with different positions and colors.
+                        </p>
+                        
+                        <div class="flex justify-center mb-4">
+                            <button class="bg-amber-700 text-white font-semibold py-2 px-4 rounded show-code text-sm" data-code="drawcar">Show C Code</button>
+                        </div>
+                        
+                        <!-- Hidden section that shows when button is clicked -->
+                        <div id="drawCarDisplay" class="hidden">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <!-- Left: Static Car Preview -->
+                                <div>
+                                    <label class="text-sm font-semibold text-amber-800 block mb-2">Static Car Preview (BGI Output)</label>
+                                    <div class="bg-stone-900 rounded-lg p-4 flex items-center justify-center" style="min-height: 220px;">
+                                        <svg width="220" height="180" viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- Car body (filled rectangle) -->
+                                            <rect x="40" y="60" width="100" height="40" fill="#FF0000" stroke="#000" stroke-width="1"/>
+                                            <!-- Car roof (filled rectangle) -->
+                                            <rect x="60" y="40" width="60" height="20" fill="#FF0000" stroke="#000" stroke-width="1"/>
+                                            <!-- Left wheel -->
+                                            <circle cx="60" cy="105" r="10" fill="#000000"/>
+                                            <!-- Right wheel -->
+                                            <circle cx="120" cy="105" r="10" fill="#000000"/>
+                                            <!-- Window detail -->
+                                            <line x1="65" y1="55" x2="95" y2="55" stroke="#87CEEB" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right: C Code -->
+                                <div>
+                                    <label class="text-sm font-semibold text-amber-800 block mb-2">C Code Example</label>
+                                    <pre id="drawCarCode" class="bg-stone-900 text-amber-100 p-3 rounded max-h-56 overflow-x-auto overflow-y-auto text-xs whitespace-pre-wrap break-words">// Click "Show C Code" to view the drawCar() function example.</pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1353,6 +1397,41 @@ int main() {
     closegraph();
     return 0;
 }`;
+                        const drawCarCode = `#include <graphics.h>
+
+void drawCar(int x, int y, int color) {
+    // Set fill style for the car body
+    setfillstyle(SOLID_FILL, color);
+
+    // Draw the car body as a rectangle
+    rectangle(x, y, x + 100, y + 40);
+    floodfill(x + 1, y + 1, color);
+
+    // Draw the roof as a smaller rectangle
+    rectangle(x + 20, y - 20, x + 80, y);
+    floodfill(x + 21, y - 19, color);
+
+    // Draw wheels as circles
+    setfillstyle(SOLID_FILL, BLACK);
+    circle(x + 20, y + 45, 10);
+    floodfill(x + 20, y + 45, BLACK);
+
+    circle(x + 80, y + 45, 10);
+    floodfill(x + 80, y + 45, BLACK);
+}
+
+int main() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
+    
+    // Draw multiple cars using the same function
+    drawCar(50, 100, RED);
+    drawCar(200, 100, BLUE);
+    
+    getch();
+    closegraph();
+    return 0;
+}`;
                         const bubbleSortCode = `#include <graphics.h>
 #include <conio.h>
 #include <stdlib.h>
@@ -1426,6 +1505,7 @@ int main() {
                             case 'line': code = lineCode; break;
                             case 'rectangle': code = rectCode; break;
                             case 'circle': code = circleCode; break;
+                            case 'drawcar': code = drawCarCode; break;
                             default: code = '// No example available.';
                         }
 
@@ -1434,6 +1514,16 @@ int main() {
                         if (which === 'bubblesort') {
                             const bc = document.getElementById('bubbleCode');
                             if (bc) bc.textContent = code;
+                        }
+                        // also populate the local drawcar code pane when requested
+                        if (which === 'drawcar') {
+                            const dcc = document.getElementById('drawCarCode');
+                            if (dcc) dcc.textContent = code;
+                            // Show the drawCar display container
+                            const drawCarDisplay = document.getElementById('drawCarDisplay');
+                            if (drawCarDisplay) {
+                                drawCarDisplay.classList.remove('hidden');
+                            }
                         }
 
                         // local plotting area
